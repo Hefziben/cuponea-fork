@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@/api/entities";
 import { Payment as PaymentEntity } from "@/api/entities";
-import { createPageUrl, SendEmail } from "@/utils"; // Added SendEmail here
+import { createPageUrl } from "@/utils"; // Added SendEmail here
+import { SendEmail } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
