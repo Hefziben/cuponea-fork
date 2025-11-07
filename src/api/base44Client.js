@@ -13,7 +13,7 @@ const mockDb = {
       subscription_active: false,
       video_coupon_credits: 3,
       video_coupons_used: 0,
-      current_role: "user", // For mock purposes
+      current_user_role: "user", // For mock purposes
       role_status: "active", // For mock purposes
       solidary_points: 150, // For mock purposes
       cuponeador_level: "bronce", // For mock purposes

@@ -11,7 +11,7 @@ export const users = pgTable('users', {
   subscription_active: boolean('subscription_active').default(false),
   video_coupon_credits: integer('video_coupon_credits').default(3),
   video_coupons_used: integer('video_coupons_used').default(0),
-  current_role: text('current_role').default('user'),
+  current_user_role: text('current_user_role').default('user'),
   role_status: text('role_status').default('active'),
   solidary_points: integer('solidary_points').default(150),
   cuponeador_level: text('cuponeador_level').default('bronce'), // 'bronce', 'plata'
