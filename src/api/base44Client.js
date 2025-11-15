@@ -152,7 +152,7 @@ const simulateDelay = (ms = 500) => new Promise(resolve => setTimeout(resolve, m
 const generateId = () => `mock-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
 const findEntity = (entityName, query) => {
-  let results = mockDb[entityName.toLowerCase()];
+  let results = mockDb[entityName];
   if (query) {
     for (const key in query) {
       results = results.filter(item => item[key] == query[key]);
@@ -207,7 +207,7 @@ export const base44 = {
     // Generic entity methods (can be extended for each specific entity)
     async list(entityName, sort = null, limit = 50) {
       await simulateDelay();
-      let results = [...mockDb[entityName.toLowerCase()]]; // Copy to avoid direct mutation
+      let results = [...mockDb[entityName]]; // Copy to avoid direct mutation
       if (sort) {
         // Simple sort logic: assumes string like "-created_date" or "name"
         const sortKey = sort.startsWith('-') ? sort.substring(1) : sort;
@@ -229,13 +229,13 @@ export const base44 = {
     async create(entityName, data) {
       await simulateDelay();
       const newEntity = { id: generateId(), created_date: new Date().toISOString(), updated_date: new Date().toISOString(), ...data };
-      mockDb[entityName.toLowerCase()].push(newEntity);
+      mockDb[entityName].push(newEntity);
       console.log(`Mock: Created ${entityName}:`, newEntity);
       return newEntity;
     },
     async update(entityName, id, data) {
       await simulateDelay();
-      const entityList = mockDb[entityName.toLowerCase()];
+      const entityList = mockDb[entityName];
       const index = entityList.findIndex(e => e.id === id);
       if (index > -1) {
         entityList[index] = { ...entityList[index], ...data, updated_date: new Date().toISOString() };
@@ -246,10 +246,10 @@ export const base44 = {
     },
     async delete(entityName, id) {
       await simulateDelay();
-      const entityList = mockDb[entityName.toLowerCase()];
+      const entityList = mockDb[entityName];
       const initialLength = entityList.length;
-      mockDb[entityName.toLowerCase()] = entityList.filter(e => e.id !== id);
-      if (mockDb[entityName.toLowerCase()].length < initialLength) {
+      mockDb[entityName] = entityList.filter(e => e.id !== id);
+      if (mockDb[entityName].length < initialLength) {
         console.log(`Mock: Deleted ${entityName} ${id}`);
         return { success: true };
       }
@@ -258,7 +258,7 @@ export const base44 = {
     async bulkCreate(entityName, dataArray) {
         await simulateDelay();
         const newEntities = dataArray.map(data => ({ id: generateId(), created_date: new Date().toISOString(), updated_date: new Date().toISOString(), ...data }));
-        mockDb[entityName.toLowerCase()].push(...newEntities);
+        mockDb[entityName].push(...newEntities);
         console.log(`Mock: Bulk created ${entityName}s:`, newEntities);
         return newEntities;
     },
@@ -274,92 +274,92 @@ export const base44 = {
 
     // Specific entity wrappers for convenience
     User: {
-        list: (sort, limit) => base44.entities.list('User', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('User', query, sort, limit),
-        create: (data) => base44.entities.create('User', data),
-        update: (id, data) => base44.entities.update('User', id, data),
-        delete: (id) => base44.entities.delete('User', id),
-        schema: () => base44.entities.schema('User'),
+        list: (sort, limit) => base44.entities.list('users', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('users', query, sort, limit),
+        create: (data) => base44.entities.create('users', data),
+        update: (id, data) => base44.entities.update('users', id, data),
+        delete: (id) => base44.entities.delete('users', id),
+        schema: () => base44.entities.schema('users'),
     },
     Coupon: {
-        list: (sort, limit) => base44.entities.list('Coupon', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('Coupon', query, sort, limit),
-        create: (data) => base44.entities.create('Coupon', data),
-        update: (id, data) => base44.entities.update('Coupon', id, data),
-        delete: (id) => base44.entities.delete('Coupon', id),
-        schema: () => base44.entities.schema('Coupon'),
+        list: (sort, limit) => base44.entities.list('coupons', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('coupons', query, sort, limit),
+        create: (data) => base44.entities.create('coupons', data),
+        update: (id, data) => base44.entities.update('coupons', id, data),
+        delete: (id) => base44.entities.delete('coupons', id),
+        schema: () => base44.entities.schema('coupons'),
     },
     Business: {
-        list: (sort, limit) => base44.entities.list('Business', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('Business', query, sort, limit),
-        create: (data) => base44.entities.create('Business', data),
-        update: (id, data) => base44.entities.update('Business', id, data),
-        delete: (id) => base44.entities.delete('Business', id),
-        schema: () => base44.entities.schema('Business'),
+        list: (sort, limit) => base44.entities.list('businesses', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('businesses', query, sort, limit),
+        create: (data) => base44.entities.create('businesses', data),
+        update: (id, data) => base44.entities.update('businesses', id, data),
+        delete: (id) => base44.entities.delete('businesses', id),
+        schema: () => base44.entities.schema('businesses'),
     },
     SavedCoupon: {
-        list: (sort, limit) => base44.entities.list('SavedCoupon', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('SavedCoupon', query, sort, limit),
-        create: (data) => base44.entities.create('SavedCoupon', data),
-        update: (id, data) => base44.entities.update('SavedCoupon', id, data),
-        delete: (id) => base44.entities.delete('SavedCoupon', id),
-        schema: () => base44.entities.schema('SavedCoupon'),
+        list: (sort, limit) => base44.entities.list('savedCoupons', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('savedCoupons', query, sort, limit),
+        create: (data) => base44.entities.create('savedCoupons', data),
+        update: (id, data) => base44.entities.update('savedCoupons', id, data),
+        delete: (id) => base44.entities.delete('savedCoupons', id),
+        schema: () => base44.entities.schema('savedCoupons'),
     },
     Prospect: {
-        list: (sort, limit) => base44.entities.list('Prospect', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('Prospect', query, sort, limit),
-        create: (data) => base44.entities.create('Prospect', data),
-        update: (id, data) => base44.entities.update('Prospect', id, data),
-        delete: (id) => base44.entities.delete('Prospect', id),
-        schema: () => base44.entities.schema('Prospect'),
+        list: (sort, limit) => base44.entities.list('prospects', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('prospects', query, sort, limit),
+        create: (data) => base44.entities.create('prospects', data),
+        update: (id, data) => base44.entities.update('prospects', id, data),
+        delete: (id) => base44.entities.delete('prospects', id),
+        schema: () => base44.entities.schema('prospects'),
     },
     Cuponeador: {
-        list: (sort, limit) => base44.entities.list('Cuponeador', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('Cuponeador', query, sort, limit),
-        create: (data) => base44.entities.create('Cuponeador', data),
-        update: (id, data) => base44.entities.update('Cuponeador', id, data),
-        delete: (id) => base44.entities.delete('Cuponeador', id),
-        schema: () => base44.entities.schema('Cuponeador'),
+        list: (sort, limit) => base44.entities.list('cuponeadores', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('cuponeadores', query, sort, limit),
+        create: (data) => base44.entities.create('cuponeadores', data),
+        update: (id, data) => base44.entities.update('cuponeadores', id, data),
+        delete: (id) => base44.entities.delete('cuponeadores', id),
+        schema: () => base44.entities.schema('cuponeadores'),
     },
     Payment: {
-        list: (sort, limit) => base44.entities.list('Payment', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('Payment', query, sort, limit),
-        create: (data) => base44.entities.create('Payment', data),
-        update: (id, data) => base44.entities.update('Payment', id, data),
-        delete: (id) => base44.entities.delete('Payment', id),
-        schema: () => base44.entities.schema('Payment'),
+        list: (sort, limit) => base44.entities.list('payments', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('payments', query, sort, limit),
+        create: (data) => base44.entities.create('payments', data),
+        update: (id, data) => base44.entities.update('payments', id, data),
+        delete: (id) => base44.entities.delete('payments', id),
+        schema: () => base44.entities.schema('payments'),
     },
     VideoCoupon: {
-        list: (sort, limit) => base44.entities.list('VideoCoupon', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('VideoCoupon', query, sort, limit),
-        create: (data) => base44.entities.create('VideoCoupon', data),
-        update: (id, data) => base44.entities.update('VideoCoupon', id, data),
-        delete: (id) => base44.entities.delete('VideoCoupon', id),
-        schema: () => base44.entities.schema('VideoCoupon'),
+        list: (sort, limit) => base44.entities.list('videoCoupons', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('videoCoupons', query, sort, limit),
+        create: (data) => base44.entities.create('videoCoupons', data),
+        update: (id, data) => base44.entities.update('videoCoupons', id, data),
+        delete: (id) => base44.entities.delete('videoCoupons', id),
+        schema: () => base44.entities.schema('videoCoupons'),
     },
     VideoInteraction: {
-        list: (sort, limit) => base44.entities.list('VideoInteraction', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('VideoInteraction', query, sort, limit),
-        create: (data) => base44.entities.create('VideoInteraction', data),
-        update: (id, data) => base44.entities.update('VideoInteraction', id, data),
-        delete: (id) => base44.entities.delete('VideoInteraction', id),
-        schema: () => base44.entities.schema('VideoInteraction'),
+        list: (sort, limit) => base44.entities.list('videoInteractions', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('videoInteractions', query, sort, limit),
+        create: (data) => base44.entities.create('videoInteractions', data),
+        update: (id, data) => base44.entities.update('videoInteractions', id, data),
+        delete: (id) => base44.entities.delete('videoInteractions', id),
+        schema: () => base44.entities.schema('videoInteractions'),
     },
     GameCommission: {
-        list: (sort, limit) => base44.entities.list('GameCommission', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('GameCommission', query, sort, limit),
-        create: (data) => base44.entities.create('GameCommission', data),
-        update: (id, data) => base44.entities.update('GameCommission', id, data),
-        delete: (id) => base44.entities.delete('GameCommission', id),
-        schema: () => base44.entities.schema('GameCommission'),
+        list: (sort, limit) => base44.entities.list('gameCommissions', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('gameCommissions', query, sort, limit),
+        create: (data) => base44.entities.create('gameCommissions', data),
+        update: (id, data) => base44.entities.update('gameCommissions', id, data),
+        delete: (id) => base44.entities.delete('gameCommissions', id),
+        schema: () => base44.entities.schema('gameCommissions'),
     },
     UserPreference: {
-        list: (sort, limit) => base44.entities.list('UserPreference', sort, limit),
-        filter: (query, sort, limit) => base44.entities.filter('UserPreference', query, sort, limit),
-        create: (data) => base44.entities.create('UserPreference', data),
-        update: (id, data) => base44.entities.update('UserPreference', id, data),
-        delete: (id) => base44.entities.delete('UserPreference', id),
-        schema: () => base44.entities.schema('UserPreference'),
+        list: (sort, limit) => base44.entities.list('userPreferences', sort, limit),
+        filter: (query, sort, limit) => base44.entities.filter('userPreferences', query, sort, limit),
+        create: (data) => base44.entities.create('userPreferences', data),
+        update: (id, data) => base44.entities.update('userPreferences', id, data),
+        delete: (id) => base44.entities.delete('userPreferences', id),
+        schema: () => base44.entities.schema('userPreferences'),
     },
   },
   integrations: {

@@ -1,63 +1,66 @@
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from '../lib/schema.js';
-import { eq } from 'drizzle-orm';
-
-const connectionString = process.env.DATABASE_URL;
-const client = postgres(connectionString);
-const db = drizzle(client, { schema });
+import { supabase } from '../lib/supabase.js';
 
 export const auth = {
   me: async () => {
-    // This is a placeholder. In a real application, you would get the
-    // currently authenticated user's ID from the session.
-    const userId = 'user-123';
-    return await db.query.users.findFirst({ where: (users, { eq }) => eq(users.id, userId) });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+    if (error) throw error;
+    return data;
   },
   login: async () => {
-    // This would be handled by a proper authentication provider.
+    // This would be handled by a proper authentication provider, e.g., Supabase UI.
   },
   updateMe: async (data) => {
-      const userId = 'user-123';
-    return await db.update(schema.users).set(data).where({ id: userId }).returning();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+    const { data: result, error } = await supabase.from('users').update(data).eq('id', user.id).select();
+    if (error) throw error;
+    return result;
   },
   logout: async () => {
-      // This would be handled by a proper authentication provider.
+    await supabase.auth.signOut();
   },
   isAuthenticated: async () => {
-      // This would be handled by a proper authentication provider.
-    return true;
+    const { data: { session } } = await supabase.auth.getSession();
+    return !!session;
   },
   redirectToLogin: async () => {
-      // This would be handled by a proper authentication provider.
+    // This would be handled by UI logic.
   },
 };
 
 const list = async (entityName, sort = null, limit = 50) => {
-    const entity = schema[entityName.toLowerCase()];
-    return await db.select().from(entity).limit(limit);
+    // Note: Supabase JS client v2 doesn't directly support dynamic sort objects.
+    // This would need to be implemented with more complex logic if required.
+    const { data, error } = await supabase.from(entityName).select('*').limit(limit);
+    if (error) throw error;
+    return data;
 };
 
 const filter = async (entityName, query = {}, sort = null, limit = 50) => {
-    const entity = schema[entityName.toLowerCase()];
-    const whereClause = Object.keys(query).map(key => eq(entity[key], query[key]));
-    return await db.select().from(entity).where(...whereClause).limit(limit);
+    const { data, error } = await supabase.from(entityName).select('*').match(query).limit(limit);
+    if (error) throw error;
+    return data;
 };
 
 const create = async (entityName, data) => {
-    const entity = schema[entityName.toLowerCase()];
-    return await db.insert(entity).values(data).returning();
+    const { data: result, error } = await supabase.from(entityName).insert(data).select();
+    if (error) throw error;
+    return result;
 };
 
 const update = async (entityName, id, data) => {
-    const entity = schema[entityName.toLowerCase()];
-    return await db.update(entity).set(data).where({ id: id }).returning();
+    const { data: result, error } = await supabase.from(entityName).update(data).eq('id', id).select();
+    if (error) throw error;
+    return result;
 };
 
 const del = async (entityName, id) => {
-    const entity = schema[entityName.toLowerCase()];
-    return await db.delete(entity).where({ id: id }).returning();
+    const { data: result, error } = await supabase.from(entityName).delete().eq('id', id).select();
+    if (error) throw error;
+    return result;
 };
 
 export const entities = {
