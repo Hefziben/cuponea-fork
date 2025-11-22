@@ -210,6 +210,9 @@ export default function Home() {
     return null;
   }
 
+  console.log('User:', user);
+  
+
   return (
     <div className="bg-slate-50 mx-auto px-4 py-6 max-w-md space-y-6">
       <PromotionalPopUp />

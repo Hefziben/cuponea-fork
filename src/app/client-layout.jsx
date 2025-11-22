@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createPageUrl } from "@/utils";
-import { base44 } from "@/api/base44Client";
+import { base44 } from "@/api/clientReal";
 import AiChatAssistant from "../components/AiChatAssistant";
 import { Button } from "@/components/ui/button";
 import {

@@ -7,7 +7,7 @@ import { Payment } from "@/api/entities";
 import { Commission } from "@/api/entities";
 import { Cuponeador } from "@/api/entities";
 import { Prospect } from "@/api/entities";
-import { base44 } from "@/api/base44Client";
+import { base44 } from "@/api/clientReal";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

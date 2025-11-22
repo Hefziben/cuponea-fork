@@ -1,12 +1,16 @@
 
-import { supabase } from '../lib/supabase.js';
+import { supabase } from '../utils/superbase/server';
 
-export const auth = {
+export const base44 = {
+   
   me: async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+     const baseId = "817d3a3b-da1e-46ee-b4e3-805c87b1da4e"
+    //const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
-    const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+    const { data, error } = await supabase.from('users').select('*').eq('id', baseId).single();
     if (error) throw error;
+    console.log('User data:', data);
+    
     return data;
   },
   login: async () => {
