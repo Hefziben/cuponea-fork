@@ -23,7 +23,7 @@ export default function Welcome() {
     async () => {
       try {
         const currentUser = await base44.auth.me();
-        if (currentUser.profile_complete) {
+        if (currentUser && currentUser.profile_complete) {
           router.push(createPageUrl("Home"));
           return;
         }

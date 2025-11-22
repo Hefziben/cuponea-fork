@@ -1,62 +1,99 @@
 
 import { supabase } from '../utils/superbase/server';
 
-export const base44 = {
-   
+const auth = {
   me: async () => {
-     const baseId = "817d3a3b-da1e-46ee-b4e3-805c87b1da4e"
-    //const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
-    const { data, error } = await supabase.from('users').select('*').eq('id', baseId).single();
-    if (error) throw error;
-    console.log('User data:', data);
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return null;
+
+    const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+    if (error) {
+       // If user exists in Auth but not in users table, we might return basic info or null
+       // But typically we expect a user record.
+       console.error("Error fetching user profile:", error);
+       throw error;
+    }
     
     return data;
   },
-  login: async () => {
-    // This would be handled by a proper authentication provider, e.g., Supabase UI.
+  login: async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
   },
   updateMe: async (data) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
-    const { data: result, error } = await supabase.from('users').update(data).eq('id', user.id).select();
+    const { data: result, error } = await supabase.from('users').update(data).eq('id', user.id).select().single();
     if (error) throw error;
     return result;
   },
   logout: async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   },
   isAuthenticated: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     return !!session;
   },
   redirectToLogin: async () => {
-    // This would be handled by UI logic.
+    // This is usually handled by the UI/Router
+    if (typeof window !== 'undefined') {
+        window.location.href = '/welcome';
+    }
   },
 };
 
 const list = async (entityName, sort = null, limit = 50) => {
-    // Note: Supabase JS client v2 doesn't directly support dynamic sort objects.
-    // This would need to be implemented with more complex logic if required.
-    const { data, error } = await supabase.from(entityName).select('*').limit(limit);
+    let query = supabase.from(entityName).select('*');
+
+    if (sort) {
+       // Handle sort string like "-created_at" or "name"
+       const ascending = !sort.startsWith('-');
+       const column = sort.startsWith('-') ? sort.substring(1) : sort;
+       query = query.order(column, { ascending });
+    }
+
+    if (limit) {
+        query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return data;
 };
 
-const filter = async (entityName, query = {}, sort = null, limit = 50) => {
-    const { data, error } = await supabase.from(entityName).select('*').match(query).limit(limit);
+const filter = async (entityName, queryObj = {}, sort = null, limit = 50) => {
+    let query = supabase.from(entityName).select('*');
+
+    // Simple equality match. For more complex queries, we'd need more logic.
+    if (queryObj) {
+        query = query.match(queryObj);
+    }
+
+    if (sort) {
+       const ascending = !sort.startsWith('-');
+       const column = sort.startsWith('-') ? sort.substring(1) : sort;
+       query = query.order(column, { ascending });
+    }
+
+    if (limit) {
+        query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return data;
 };
 
 const create = async (entityName, data) => {
-    const { data: result, error } = await supabase.from(entityName).insert(data).select();
+    const { data: result, error } = await supabase.from(entityName).insert(data).select().single();
     if (error) throw error;
     return result;
 };
 
 const update = async (entityName, id, data) => {
-    const { data: result, error } = await supabase.from(entityName).update(data).eq('id', id).select();
+    const { data: result, error } = await supabase.from(entityName).update(data).eq('id', id).select().single();
     if (error) throw error;
     return result;
 };
@@ -67,108 +104,62 @@ const del = async (entityName, id) => {
     return result;
 };
 
+// Helper to create entity wrapper
+const createEntityWrapper = (tableName) => ({
+    list: (sort, limit) => list(tableName, sort, limit),
+    filter: (query, sort, limit) => filter(tableName, query, sort, limit),
+    create: (data) => create(tableName, data),
+    update: (id, data) => update(tableName, id, data),
+    delete: (id) => del(tableName, id),
+});
+
 export const entities = {
   list,
   filter,
   create,
   update,
   delete: del,
-  User: {
-      list: (sort, limit) => list('users', sort, limit),
-      filter: (query, sort, limit) => filter('users', query, sort, limit),
-      create: (data) => create('users', data),
-      update: (id, data) => update('users', id, data),
-      delete: (id) => del('users', id),
-  },
-  Coupon: {
-      list: (sort, limit) => list('coupons', sort, limit),
-      filter: (query, sort, limit) => filter('coupons', query, sort, limit),
-      create: (data) => create('coupons', data),
-      update: (id, data) => update('coupons', id, data),
-      delete: (id) => del('coupons', id),
-  },
-  Business: {
-      list: (sort, limit) => list('businesses', sort, limit),
-      filter: (query, sort, limit) => filter('businesses', query, sort, limit),
-      create: (data) => create('businesses', data),
-      update: (id, data) => update('businesses', id, data),
-      delete: (id) => del('businesses', id),
-  },
-  SavedCoupon: {
-      list: (sort, limit) => list('savedCoupons', sort, limit),
-      filter: (query, sort, limit) => filter('savedCoupons', query, sort, limit),
-      create: (data) => create('savedCoupons', data),
-      update: (id, data) => update('savedCoupons', id, data),
-      delete: (id) => del('savedCoupons', id),
-  },
-  Prospect: {
-      list: (sort, limit) => list('prospects', sort, limit),
-      filter: (query, sort, limit) => filter('prospects', query, sort, limit),
-      create: (data) => create('prospects', data),
-      update: (id, data) => update('prospects', id, data),
-      delete: (id) => del('prospects', id),
-  },
-  Cuponeador: {
-      list: (sort, limit) => list('cuponeadores', sort, limit),
-      filter: (query, sort, limit) => filter('cuponeadores', query, sort, limit),
-      create: (data) => create('cuponeadores', data),
-      update: (id, data) => update('cuponeadores', id, data),
-      delete: (id) => del('cuponeadores', id),
-  },
-  Payment: {
-      list: (sort, limit) => list('payments', sort, limit),
-      filter: (query, sort, limit) => filter('payments', query, sort, limit),
-      create: (data) => create('payments', data),
-      update: (id, data) => update('payments', id, data),
-      delete: (id) => del('payments', id),
-  },
-  VideoCoupon: {
-      list: (sort, limit) => list('videoCoupons', sort, limit),
-      filter: (query, sort, limit) => filter('videoCoupons', query, sort, limit),
-      create: (data) => create('videoCoupons', data),
-      update: (id, data) => update('videoCoupons', id, data),
-      delete: (id) => del('videoCoupons', id),
-  },
-  VideoInteraction: {
-      list: (sort, limit) => list('videoInteractions', sort, limit),
-      filter: (query, sort, limit) => filter('videoInteractions', query, sort, limit),
-      create: (data) => create('videoInteractions', data),
-      update: (id, data) => update('videoInteractions', id, data),
-      delete: (id) => del('videoInteractions', id),
-  },
-  GameCommission: {
-      list: (sort, limit) => list('gameCommissions', sort, limit),
-      filter: (query, sort, limit) => filter('gameCommissions', query, sort, limit),
-      create: (data) => create('gameCommissions', data),
-      update: (id, data) => update('gameCommissions', id, data),
-      delete: (id) => del('gameCommissions', id),
-  },
-  UserPreference: {
-      list: (sort, limit) => list('userPreferences', sort, limit),
-      filter: (query, sort, limit) => filter('userPreferences', query, sort, limit),
-      create: (data) => create('userPreferences', data),
-      update: (id, data) => update('userPreferences', id, data),
-      delete: (id) => del('userPreferences', id),
-  },
+  User: createEntityWrapper('users'),
+  Coupon: createEntityWrapper('coupons'),
+  Business: createEntityWrapper('businesses'),
+  SavedCoupon: createEntityWrapper('savedCoupons'),
+  Prospect: createEntityWrapper('prospects'),
+  Cuponeador: createEntityWrapper('cuponeadores'),
+  Payment: createEntityWrapper('payments'),
+  VideoCoupon: createEntityWrapper('videoCoupons'),
+  VideoInteraction: createEntityWrapper('videoInteractions'),
+  GameCommission: createEntityWrapper('gameCommissions'),
+  UserPreference: createEntityWrapper('userPreferences'),
 };
 
 export const integrations = {
   Core: {
       InvokeLLM: async ({ prompt, response_json_schema }) => {
-          // This would be a call to an external LLM provider.
-          return { "mock_response": "This is a structured AI response from a real implementation." };
+          // Call your backend API or Edge Function that wraps the LLM
+          console.warn("InvokeLLM not implemented in clientReal.js");
+          return { "mock_response": "Real LLM integration pending." };
       },
       SendEmail: async ({ to, subject, body, from_name }) => {
-          // This would be a call to an external email provider.
-          return { success: true, message: "Real email sent." };
+          console.warn("SendEmail not implemented in clientReal.js");
+          return { success: true, message: "Real email integration pending." };
       },
       UploadFile: async ({ file }) => {
-          // This would be a call to a file storage provider.
-          return { file_url: `https://real.base44.com/files/${file.name}` };
+          // Supabase Storage
+          const fileName = `${Date.now()}-${file.name}`;
+          const { data, error } = await supabase.storage.from('files').upload(fileName, file);
+          if (error) throw error;
+          const { data: { publicUrl } } = supabase.storage.from('files').getPublicUrl(fileName);
+          return { file_url: publicUrl };
       },
       GenerateImage: async ({ prompt }) => {
-          // This would be a call to an image generation provider.
-          return { url: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=2070&auto-format&fit=crop" };
+          console.warn("GenerateImage not implemented in clientReal.js");
+          return { url: "https://via.placeholder.com/300" };
       },
   }
+};
+
+export const base44 = {
+    auth,
+    entities,
+    integrations
 };
