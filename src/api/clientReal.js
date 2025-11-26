@@ -3,10 +3,11 @@ import { supabase } from '../utils/superbase/server';
 
 const auth = {
   me: async () => {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) return null;
+    const testUserId = "817d3a3b-da1e-46ee-b4e3-805c87b1da4e"
+    // const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // if (authError || !user) return null;
 
-    const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+    const { data, error } = await supabase.from('users').select('*').eq('id', testUserId).single();
     if (error) {
        // If user exists in Auth but not in users table, we might return basic info or null
        // But typically we expect a user record.
