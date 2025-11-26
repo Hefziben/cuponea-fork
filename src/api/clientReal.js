@@ -16,6 +16,20 @@ const auth = {
     
     return data;
   },
+    users: async () => {
+
+
+    const { data: todos, error } = await supabase.from('users').select()
+
+    if (error) {
+       // If user exists in Auth but not in users table, we might return basic info or null
+       // But typically we expect a user record.
+       console.error("Error fetching users profile:", error);
+       throw error;
+    }
+    
+    return data;
+  },
   login: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
