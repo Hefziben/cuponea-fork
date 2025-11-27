@@ -210,7 +210,6 @@ export default function Home() {
     return null;
   }
 
-  console.log('User:', user);
   
 
   return (
