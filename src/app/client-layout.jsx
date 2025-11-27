@@ -70,6 +70,7 @@ export default function RootLayout({ children }) {
 
   const specialPages = [
     "welcome",
+    "login",
     "business-setup",
     "select-plan",
     "payment",
