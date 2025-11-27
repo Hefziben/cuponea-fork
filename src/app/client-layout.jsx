@@ -199,11 +199,6 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en">
-      <head>
-        <title>Cuponea</title>
-      </head>
-      <body>
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
           <style>
             {`
@@ -289,7 +284,5 @@ export default function RootLayout({ children }) {
             </div>
           </nav>
         </div>
-      </body>
-    </html>
   );
 }
