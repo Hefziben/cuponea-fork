@@ -95,7 +95,7 @@ export default function Home() {
       // Load public data (coupons)
       let couponsData = [];
       try {
-        couponsData = await Coupon.filter({ is_active: true }, "-created_at", 50);
+        couponsData = await Coupon.filter({ is_active: true }, "-created_date", 50);
         setCoupons(couponsData);
       } catch (couponsError) {
         console.error("Error loading coupons:", couponsError);
@@ -210,6 +210,7 @@ export default function Home() {
     return null;
   }
 
+  console.log('User:', user);
   
 
   return (

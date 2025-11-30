@@ -73,7 +73,7 @@ export default function Categories() {
 
       const couponsData = await Coupon.filter(
         { is_active: true },
-        "-created_at",
+        "-created_date",
         50
       );
       setCoupons(couponsData);

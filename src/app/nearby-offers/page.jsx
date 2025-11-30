@@ -127,7 +127,7 @@ export default function NearbyOffers() {
 
       const offers = await base44.entities.Coupon.filter(
         { is_active: true },
-        "-created_at",
+        "-created_date",
         10
       );
 
