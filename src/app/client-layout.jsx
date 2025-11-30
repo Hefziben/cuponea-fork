@@ -199,97 +199,90 @@ export default function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en">
-      <head>
-        <title>Cuponea</title>
-      </head>
-      <body>
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
-          <style>
-            {`
-              :root {
-                --primary: #8E44AD;
-                --secondary: #28A745;
-                --urgent: #FF9800;
-                --highlight: #FFC107;
-                --alert: #E53935;
-              }
-            `}
-          </style>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
+      <style>
+        {`
+          :root {
+            --primary: #8E44AD;
+            --secondary: #28A745;
+            --urgent: #FF9800;
+            --highlight: #FFC107;
+            --alert: #E53935;
+          }
+        `}
+      </style>
 
-          <header className="bg-white/80 backdrop-blur-lg border-b border-purple-100 sticky top-0 z-50">
-            <div className="flex items-center justify-between max-w-md mx-auto px-4 py-3">
-            <div className="flex items-center space-x-3">
-              <Link href={createPageUrl("Home")} className="flex items-center">
-                <img
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68aa46b3812d9b619dc0d930/64b6e0ea4_logocuponeamorado.png"
-                  alt="Cuponea Logo"
-                  className="h-8 w-auto"
-                />
-              </Link>
-              {user?.account_type === "business" && (
-                <span className="bg-purple-100 text-[var(--primary)] text-xs px-2 py-1 rounded-full font-medium">
-                  <Store className="w-3 h-3 inline mr-1" />
-                  Comercio
-                </span>
-              )}
-              {user?.account_type === "cuponeador" && (
-                <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium flex items-center">
-                  <Crown className="w-3 h-3 mr-1" />
-                  Cuponeador
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button className="bg-purple-100 text-[var(--primary)] p-2 rounded-full hover:bg-purple-200 transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
-            </div>
+      <header className="bg-white/80 backdrop-blur-lg border-b border-purple-100 sticky top-0 z-50">
+        <div className="flex items-center justify-between max-w-md mx-auto px-4 py-3">
+          <div className="flex items-center space-x-3">
+            <Link href={createPageUrl("Home")} className="flex items-center">
+              <img
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68aa46b3812d9b619dc0d930/64b6e0ea4_logocuponeamorado.png"
+                alt="Cuponea Logo"
+                className="h-8 w-auto"
+              />
+            </Link>
+            {user?.account_type === "business" && (
+              <span className="bg-purple-100 text-[var(--primary)] text-xs px-2 py-1 rounded-full font-medium">
+                <Store className="w-3 h-3 inline mr-1" />
+                Comercio
+              </span>
+            )}
+            {user?.account_type === "cuponeador" && (
+              <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                <Crown className="w-3 h-3 mr-1" />
+                Cuponeador
+              </span>
+            )}
           </div>
-        </header>
 
-        <main className="bg-transparent pb-20 min-h-screen">{children}</main>
-
-        {/* AI Chat Assistant FAB */}
-        {user &&
-          (user.account_type === "user" ||
-            user.account_type === "cuponeador") && (
-            <AiChatAssistant user={user}>
-              <Button className="fixed bottom-24 right-4 h-14 w-14 rounded-full bg-[var(--primary)] text-white shadow-lg hover:scale-110 transition-transform z-40">
-                <BrainCircuit className="w-7 h-7" />
-              </Button>
-            </AiChatAssistant>
-          )}
-
-        {/* Navegación sin nombres, solo iconos */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-4 py-3 z-50">
-          <div className="flex items-center justify-around max-w-md mx-auto">
-            {navigationItems.map(item => {
-              const isActive = pathname === item.path;
-              return (
-                <Link
-                  key={item.key}
-                  href={item.path}
-                  className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? "text-[var(--primary)] bg-purple-50 shadow-sm"
-                      : "text-gray-500 hover:text-[var(--primary)] hover:bg-purple-50"
-                  }`}
-                >
-                  <item.icon className="w-6 h-6" />
-                  {item.badge && (
-                    <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[0.6rem] font-bold px-1 rounded-full">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-            </div>
-          </nav>
+          <div className="flex items-center space-x-2">
+            <button className="bg-purple-100 text-[var(--primary)] p-2 rounded-full hover:bg-purple-200 transition-colors">
+              <Bell className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-      </body>
-    </html>
+      </header>
+
+      <main className="bg-transparent pb-20 min-h-screen">{children}</main>
+
+      {/* AI Chat Assistant FAB */}
+      {user &&
+        (user.account_type === "user" ||
+          user.account_type === "cuponeador") && (
+          <AiChatAssistant user={user}>
+            <Button className="fixed bottom-24 right-4 h-14 w-14 rounded-full bg-[var(--primary)] text-white shadow-lg hover:scale-110 transition-transform z-40">
+              <BrainCircuit className="w-7 h-7" />
+            </Button>
+          </AiChatAssistant>
+        )}
+
+      {/* Navegación sin nombres, solo iconos */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-4 py-3 z-50">
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          {navigationItems.map(item => {
+            const isActive = pathname === item.path;
+            return (
+              <Link
+                key={item.key}
+                href={item.path}
+                className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? "text-[var(--primary)] bg-purple-50 shadow-sm"
+                    : "text-gray-500 hover:text-[var(--primary)] hover:bg-purple-50"
+                }`}
+              >
+                <item.icon className="w-6 h-6" />
+                {item.badge && (
+                  <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-[0.6rem] font-bold px-1 rounded-full">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
   );
 }
