@@ -137,7 +137,7 @@ export default function BusinessDashboard({ user }) {
           // Get latest payment
           if (payments.length > 0) {
             const latestPayment = payments.sort(
-              (a, b) => new Date(b.created_date) - new Date(a.created_date)
+              (a, b) => new Date(b.created_at) - new Date(a.created_at)
             )[0];
             setPaymentInfo(latestPayment);
 

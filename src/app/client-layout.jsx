@@ -70,6 +70,7 @@ export default function RootLayout({ children }) {
 
   const specialPages = [
     "welcome",
+    "login",
     "business-setup",
     "select-plan",
     "payment",
@@ -78,7 +79,7 @@ export default function RootLayout({ children }) {
     "cuponeador-signup"
   ];
   if (specialPages.some(page => pathname.includes(page))) {
-    return children;
+    return <body>{children}</body>;
   }
 
   const isBusiness = user?.account_type === "business";
@@ -192,20 +193,18 @@ export default function RootLayout({ children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9b59b6]" />
-      </div>
+      <body>
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9b59b6]" />
+        </div>
+      </body>
     );
   }
 
   return (
-    <html lang="en">
-      <head>
-        <title>Cuponea</title>
-      </head>
-      <body>
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
-          <style>
+    <body>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
+        <style>
             {`
               :root {
                 --primary: #8E44AD;
@@ -290,6 +289,5 @@ export default function RootLayout({ children }) {
           </nav>
         </div>
       </body>
-    </html>
   );
 }
